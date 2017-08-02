@@ -1,16 +1,15 @@
-
-
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+
     <title>Instagram Clone</title>
+
+<!--adding CSS into Html-->
     <style>
        body{
-           background: url("https://www.walldevil.com/wallpapers/a33/design-colorful-amazing-wallpapers-freewallpapers-wallpaper-abstract.jpg");
+           background-color: black;
+
            background-size: cover;
            background-repeat: no-repeat;
            -webkit-background-size: cover;
@@ -42,10 +41,13 @@ text-align:right;
 
 
 </head>
+
+<!--HTML main content(body)-->
 <body>
+
 	<div class="main">
-            <h1> Instagram Clone</h1>
-            <h3>Sign Up</h3>
+        <h1> <font color="white"> Instagram Clone</font></h1>
+        <h3><font color="white">Sign Up</font></h3>
     </div>
 
     <div>
@@ -53,31 +55,34 @@ text-align:right;
             {% csrf_token %}
 
             <div>
-                <label for="username">Username: </label>
+                <label for="username"><font color="white">Username: </font></label>
                 <input id="username" type="text" name="username" value={{ username }}>
             </div>
 
             <div>
-                <label for="name">Name: </label>
+                <label for="name"><font color="white">Name: </font></label>
                 <input id="name" type="text" name="name" value={{ name }}>
             </div>
 
             <div>
-                <label for="email">Email: </label>
+                <label for="email"><font color="white">Email: </font></label>
                 <input id="email" type="text" name="email" value={{ email }}>
             </div>
 
             <div>
-                <label for="password">Password: </label>
+                <label for="password"><font color="white">Password:</font> </label>
                 <input id="password" type="password" name="password" value={{ password }}>
             </div>
                 <input type="submit" value="Sign Up">
+
         </form>
+
 
 
     </div><br><br>
 
-    <div><h3>Already a user?</h3><button onclick= "location.href = 'login/'" type="button">Login</button>
+    <div><h3><font color="white">Already a user?</font></h3><button onclick= "location.href = 'login/'" type="button">Login</button>
 </div>
+</font>
 </body>
 </html>

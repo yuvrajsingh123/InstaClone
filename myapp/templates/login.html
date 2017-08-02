@@ -1,16 +1,14 @@
-
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Login Page</title>
+
+    <!--adding CSS into Html-->
     <style>
         body{
             text-align: center;
-            background: url("https://www.walldevil.com/wallpapers/a33/design-colorful-amazing-wallpapers-freewallpapers-wallpaper-abstract.jpg") no-repeat center center fixed;
+            background-color: black;
            background-size: cover;
            background-repeat: no-repeat;
            -webkit-background-size: cover;
@@ -37,21 +35,23 @@ input{
 }
     </style>
 </head>
+
+<!--HTML main content(body)-->
 <body>
-<h1>Instagram Clone</h1><br>
+<h1><font color="white">Instagram Clone</font></h1><br>
 
     <h2>Login</h2>
  <form method="post">
      {% csrf_token %}
       <b>
       <div>
-          <label for="username">Username: </label>
+          <label for="username"><font color="white">Username:</font> </label>
           <input id="username" type="text" name="username" value={{ username }}>
       </div>
           <br>
 
       <div>
-          <label for="password">Password: </label>
+          <label for="password"><font color="white">Password:</font> </label>
           <input id="password" type="password" name="password" value={{ password }}>
 
       </div>

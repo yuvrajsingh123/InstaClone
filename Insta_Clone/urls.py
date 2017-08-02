@@ -18,9 +18,12 @@ from django.contrib import admin
 
 from django.conf.urls import url
 
-from myapp.views import signup_view, login_view, feed_view, post_view, like_view, comment_view,logout_view,upvote_view
+from myapp.views import signup_view, login_view, feed_view, post_view, like_view, comment_view,logout_view,upvote_view,query_based_search_view
 
+
+# defining urls
 urlpatterns = [
+url('searchfilter/', query_based_search_view),
     url('upvote/', upvote_view),
     url('logout/', logout_view),
     url('post/', post_view),

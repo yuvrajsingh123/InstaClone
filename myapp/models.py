@@ -1,6 +1,3 @@
-
-
-
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
@@ -10,7 +7,7 @@ import uuid
 
 # Create your models here.
 
-
+# Create a model for user
 class UserModel(models.Model):
 	email = models.EmailField()
 	name = models.CharField(max_length=120)
@@ -19,6 +16,8 @@ class UserModel(models.Model):
 	created_on = models.DateTimeField(auto_now_add=True)
 	updated_on = models.DateTimeField(auto_now=True)
 
+
+# Create a model for SessionToken
 class SessionToken(models.Model):
 	user = models.ForeignKey(UserModel)
 	session_token = models.CharField(max_length=255)
@@ -29,6 +28,8 @@ class SessionToken(models.Model):
 	def create_token(self):
 		self.session_token = uuid.uuid4()
 
+
+# Create a model for Post
 class PostModel(models.Model):
 	user = models.ForeignKey(UserModel)
 	image = models.FileField(upload_to='user_images')
@@ -47,6 +48,8 @@ class PostModel(models.Model):
 	def comments(self):
 		return CommentModel.objects.filter(post=self).order_by('-created_on')
 
+
+# Create a model for Like
 class LikeModel(models.Model):
 	user = models.ForeignKey(UserModel)
 	post = models.ForeignKey(PostModel)
@@ -54,6 +57,7 @@ class LikeModel(models.Model):
 	updated_on = models.DateTimeField(auto_now=True)
 
 
+# Create a model for Comment
 class CommentModel(models.Model):
 	user = models.ForeignKey(UserModel)
 	post = models.ForeignKey(PostModel)

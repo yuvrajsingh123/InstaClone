@@ -1,15 +1,8 @@
-#('b05a87fc2d9b16a', 'e40bae7fc06026074022bcac6b4f370fe4963cba')
-#apikey = 'DRmg2bz8D85xI8Tm0pSCYOITFGx1EyirLk1nhhGduJs'
-#app = ClarifaiApp(api_key='e3475406ddda439aa8a077faa6ad201b')
-
-
-
-
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
 from django.shortcuts import render, redirect
-from forms import SignUpForm, LoginForm, PostForm, LikeForm, CommentForm, UpvoteForm
+from forms import SignUpForm, LoginForm, PostForm, LikeForm, CommentForm, UpvoteForm,SearchForm
 from models import UserModel, SessionToken, PostModel, LikeModel, CommentModel
 from django.contrib.auth.hashers import make_password, check_password
 from datetime import timedelta
@@ -42,11 +35,12 @@ def signup_view(request):
 
     return render(request, 'index.html', {'form': form})
 
-
+# create view for login
 def login_view(request):
     response_data = {}
     if request.method == "POST":
         form = LoginForm(request.POST)
+        # check if form is valid
         if form.is_valid():
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
@@ -56,6 +50,8 @@ def login_view(request):
                 if check_password(password, user.password):
                     token = SessionToken(user=user)
                     token.create_token()
+
+                    # saving session token
                     token.save()
                     response = redirect('feed/')
                     response.set_cookie(key='session_token', value=token.session_token)
@@ -70,17 +66,21 @@ def login_view(request):
     return render(request, 'login.html', response_data)
 
 
+# create view for post
 def post_view(request):
     user = check_validation(request)
 
     if user:
         if request.method == 'POST':
             form = PostForm(request.POST, request.FILES)
+            #checking if form is valid or not
             if form.is_valid():
                 image = form.cleaned_data.get('image')
                 caption = form.cleaned_data.get('caption')
                 post = PostModel(user=user, image=image, caption=caption)
+                #saving posts
                 post.save()
+
                 apikey = 'lBzto9IhYQnI8Z6kd4dFap0gGbFexBgRBknxuISGFK4'
                 request_url = ('https://apis.paralleldots.com/sentiment?sentence1=%s&apikey=%s') % (caption, apikey)
                 print 'POST request url : %s' % (request_url)
@@ -89,10 +89,13 @@ def post_view(request):
 
                 path = str(BASE_DIR + '\\' + post.image.url)
 
+                #imgur api key
                 client = ImgurClient("315c0833408f9c0", "ab94bfdc68d430ac6f7aa5f16260b1f5d6e27b5e")
                 post.image_url = client.upload_from_path(path, anon=True)['link']
                 print post.image_url
                 post.save()
+
+                #keywords that will be helpful in accessing dirty area post
                 keywords = ['garbage', 'waste', 'trash', 'dirt', 'pollution', 'dust']
                 value_list = []
                 app = ClarifaiApp(api_key='ecc5aea7265040b4b320b3446f96152c')
@@ -105,7 +108,8 @@ def post_view(request):
                     if prediction['outputs'][0]['data']['concepts'][i]['name'] in keywords:
                         value = prediction['outputs'][0]['data']['concepts'][i]['value']
                         value_list.append(value)
-
+                    #
+                        # checking condition
                 if (sentiment_value < 0.6 and max(value_list) > 0.8):
                     print 'dirty image'
                     send_mail(post.image_url)
@@ -114,15 +118,19 @@ def post_view(request):
 
         else:
             form = PostForm()
+
+            #return post html page
         return render(request, 'post.html', {'form': form})
     else:
         return redirect('/login/')
 
-
+#function for sending email using sendgrid
 def send_mail(url):
-    sg = sendgrid.SendGridAPIClient(apikey='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')
 
-    from_email = Email("sakshikhattar1@gmail.com")
+    #sendgrid api key
+    sg = sendgrid.SendGridAPIClient(apikey='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')
+
+    from_email = Email("yuvi0622@gmail.com")
     to_email = Email("ysyuvraj079@gmail.com")
     message = "<html><body><h1>Image of the dirty area</h1><br><img src =" + url + "></body></html>"
     subject = "Image of dirty area!"
@@ -134,8 +142,11 @@ def send_mail(url):
     print(response.headers)
 
 
+#function for feed
 def feed_view(request):
     user = check_validation(request)
+
+    #checking a user
     if user:
 
         posts = PostModel.objects.all().order_by('created_on')
@@ -147,14 +158,16 @@ def feed_view(request):
 
         return render(request, 'feed.html', {'posts': posts})
     else:
-
+#return to login page
         return redirect('/login/')
 
-
+#function for like
 def like_view(request):
     user = check_validation(request)
     if user and request.method == 'POST':
         form = LikeForm(request.POST)
+
+        #checking whether form is valid or not
         if form.is_valid():
             post_id = form.cleaned_data.get('post').id
             existing_like = LikeModel.objects.filter(post_id=post_id, user=user).first()
@@ -167,6 +180,7 @@ def like_view(request):
         return redirect('/login/')
 
 
+#function for comment
 def comment_view(request):
     user = check_validation(request)
     if user and request.method == 'POST':
@@ -175,13 +189,18 @@ def comment_view(request):
             post_id = form.cleaned_data.get('post').id
             comment_text = form.cleaned_data.get('comment_text')
             comment = CommentModel.objects.create(user=user, post_id=post_id, comment_text=comment_text)
+
+            #saving comment
             comment.save()
             return redirect('/feed/')
         else:
+            #redirecting to a feed page
             return redirect('/feed/')
     else:
         return redirect('/login')
 
+
+#function for logout
 def logout_view(request):
     user = check_validation(request)
     if user is not None:
@@ -211,16 +230,16 @@ def upvote_view(request):
             if comment is not None:
                 # print ' unliking post'
                 print ("upvoted")
-                comment.upvote_num+=1
+                comment.upvote_num =+1
                 comment.save()
                 print (comment.upvote_num)
             else:
                 print ('stupid mistake')
                 #liked_msg = 'Unliked!'
 
-        return redirect('/Feed/')
+        return redirect('/feed/')
     else:
-        return redirect('/Feed/')
+        return redirect('/feed/')
 
 # For validating the session
 def check_validation(request):
@@ -232,3 +251,23 @@ def check_validation(request):
                 return session.user
     else:
         return None
+
+
+#function for query based search... you can search by name
+def query_based_search_view(request):
+    user = check_validation(request)
+    if user:
+        if request.method == "POST":
+            searchForm = SearchForm(request.POST)
+
+            #checking whether searchform is valid or not
+            if searchForm.is_valid():
+                print 'valid'
+                username_query = searchForm.cleaned_data.get('searchquery')
+                user_with_query = UserModel.objects.filter(username=username_query).first();
+                posts = PostModel.objects.filter(user=user_with_query)
+                return render(request, 'feed.html', {'posts': posts})
+            else:
+                return redirect('/feed/')
+    else:
+        return redirect('/login/')
