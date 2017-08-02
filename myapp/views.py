@@ -66,6 +66,7 @@ def login_view(request):
     return render(request, 'login.html', response_data)
 
 
+# Swach Bharat Objective covered here
 # create view for post
 def post_view(request):
     user = check_validation(request)
@@ -199,7 +200,7 @@ def comment_view(request):
     else:
         return redirect('/login')
 
-
+#Implement the logout functionality- objective
 #function for logout
 def logout_view(request):
     user = check_validation(request)
@@ -210,7 +211,7 @@ def logout_view(request):
 
     return redirect("/login/")
 
-
+# Implement upvoting on a comment -objective
 # method to create upvote for comments
 def upvote_view(request):
     user = check_validation(request)
@@ -252,7 +253,7 @@ def check_validation(request):
     else:
         return None
 
-
+# Make the url accept query parameters to optionally show posts only from a particular user- objective
 #function for query based search... you can search by name
 def query_based_search_view(request):
     user = check_validation(request)
